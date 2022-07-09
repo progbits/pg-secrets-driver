@@ -8,6 +8,8 @@ import (
 	"sync"
 )
 
+const errInvalidPassword = "28P01"
+
 // CredentialsProvider implementations return a valid Postgres data source
 // name.
 type CredentialsProvider interface {
@@ -40,7 +42,7 @@ func (c *PgSecretsConnector) Connect(ctx context.Context) (driver.Conn, error) {
 	conn, err := c.driver.Open(dataSourceName)
 	if err != nil {
 		if e, ok := err.(*pq.Error); ok {
-			if e.Code == "28P01" {
+			if e.Code == errInvalidPassword {
 				// Invalid password.
 				dataSourceName, err = c.provider.GetDataSourceName()
 				if err != nil {
