@@ -14,6 +14,7 @@ const errInvalidPassword = "28P01"
 // name.
 type CredentialsProvider interface {
 	GetDataSourceName() (string, error)
+	Retries() int
 }
 
 // PgSecretsConnector implements the driver.Connector interface.
@@ -34,26 +35,35 @@ func (c *PgSecretsConnector) Connect(ctx context.Context) (driver.Conn, error) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	dataSourceName, err := c.provider.GetDataSourceName()
-	if err != nil {
-		return nil, err
-	}
-
-	conn, err := c.driver.Open(dataSourceName)
-	if err != nil {
-		if e, ok := err.(*pq.Error); ok {
-			if e.Code == errInvalidPassword {
-				// Invalid password.
-				dataSourceName, err = c.provider.GetDataSourceName()
-				if err != nil {
-					return nil, err
-				}
-				return c.driver.Open(dataSourceName)
-			}
+	var authErr error = nil
+	for i := 0; i < c.provider.Retries(); i++ {
+		dataSourceName, err := c.provider.GetDataSourceName()
+		if err != nil {
+			return nil, err
 		}
+
+		conn, err := c.driver.Open(dataSourceName)
+		if err == nil {
+			// Connected successfully.
+			return conn, err
+		}
+
+		pqErr, ok := err.(*pq.Error)
+		if !ok {
+			// Not a Postgres error, don't retry.
+			return nil, err
+		}
+
+		if pqErr.Code == errInvalidPassword {
+			// Authentication error, maybe try again.
+			authErr = err
+			continue
+		}
+
+		// Not an authentication error, don't retry.
 		return nil, err
 	}
-	return conn, err
+	return nil, authErr
 }
 
 // Driver returns the underlying driver of the connector.
