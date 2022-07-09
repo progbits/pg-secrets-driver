@@ -10,14 +10,27 @@ import (
 
 const errInvalidPassword = "28P01"
 
-// CredentialsProvider implementations return a valid Postgres data source
-// name.
+// CredentialsProvider implementations are a source of Postgres data
+// source names, where a data source name is a valid Postgres connection
+// string (https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING).
+//
+// The GetDataSourceName method is called each time a new database connection
+// is required, e.g. each time the PgSecretsConnector.Connect method is called.
+// If the PgSecretsConnector.Connect method fails with `invalid_password`, the
+// GetDataSourceName method is called a further n times, where n is determined
+// by the result of the Retries method. This presents an opportunity to attempt
+// to connect with different sets of credentials, e.g. rotated_current and
+// rotated_previous.
 type CredentialsProvider interface {
 	GetDataSourceName() (string, error)
 	Retries() int
 }
 
-// PgSecretsConnector implements the driver.Connector interface.
+// PgSecretsConnector is the main library type and implements the
+// driver.Connector interface. This means it can be passed to the sql.OpenDB
+// method as a source of database connections. The connection string used to
+// open a new database connection is sourced from the configured
+// CredentialsProvider implementation.
 type PgSecretsConnector struct {
 	mutex    sync.Mutex
 	driver   driver.Driver
