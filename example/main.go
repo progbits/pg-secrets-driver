@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	conn "github.com/progbits/pg-secrets-driver"
 	"log"
 	"net/url"
@@ -33,6 +34,8 @@ func (p *TestCredentialsProvider) GetDataSourceName() (string, error) {
 	password := p.passwords[p.count]
 	p.count++
 
+	fmt.Printf("Returning data source name with password: %s\n", password)
+
 	return withPassword(password), nil
 }
 
@@ -42,7 +45,7 @@ func (p *TestCredentialsProvider) Retries() int {
 }
 
 func main() {
-	passwords := []string{"foo", "bar", "baz", "password", "pa$$w0rd"}
+	passwords := []string{"foo", "bar", "baz", "password", "pa$$w0rd", "wrong-password"}
 	provider := &TestCredentialsProvider{
 		passwords: passwords,
 	}
