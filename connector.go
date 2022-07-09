@@ -42,7 +42,7 @@ func (c *PgSecretsConnector) Connect(ctx context.Context) (driver.Conn, error) {
 		if e, ok := err.(*pq.Error); ok {
 			if e.Code == "28P01" {
 				// Invalid password.
-				dataSourceName, err := c.provider.GetDataSourceName()
+				dataSourceName, err = c.provider.GetDataSourceName()
 				if err != nil {
 					return nil, err
 				}
