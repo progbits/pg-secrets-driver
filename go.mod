@@ -3,7 +3,7 @@ module github.com/progbits/pg-secrets-driver
 go 1.18
 
 require (
-	github.com/lib/pq v1.10.6
+	github.com/lib/pq v1.10.7
 	github.com/testcontainers/testcontainers-go v0.13.0
 )
 
@@ -35,7 +35,6 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
 	golang.org/x/sys v0.0.0-20220708085239-5a0f0661e09d // indirect
-	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220708155623-50e5f4832e73 // indirect
 	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
