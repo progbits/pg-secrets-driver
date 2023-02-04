@@ -1,5 +1,7 @@
 # pg-secrets-driver
 
+[![Build](https://github.com/progbits/pg-secrets-driver/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/progbits/pg-secrets-driver/actions/workflows/build.yaml)
+
 A Postgres database driver that supports credential rotation.
 
 ## Getting Started
