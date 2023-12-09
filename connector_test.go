@@ -112,7 +112,7 @@ func TestConnector(t *testing.T) {
 				port:      container.Port,
 				passwords: []string{"wrong-password"},
 			},
-			expectedErr: pq.Error{
+			expectedErr: &pq.Error{
 				Code:    "28P01",
 				Message: "password authentication failed for user \"postgres\"",
 			},
@@ -123,7 +123,7 @@ func TestConnector(t *testing.T) {
 				port:      container.Port,
 				passwords: []string{"wrong-password-0", "wrong-password-1"},
 			},
-			expectedErr: pq.Error{
+			expectedErr: &pq.Error{
 				Code:    "28P01",
 				Message: "password authentication failed for user \"postgres\"",
 			},
