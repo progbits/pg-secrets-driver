@@ -6,7 +6,7 @@ build:
 	go build
 
 build-example:
-	go build -o bin/example example/main.go
+	go build -o bin/example examples/basic/main.go
 
 run-example: build-example
 	./bin/example
